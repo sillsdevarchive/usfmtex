@@ -311,12 +311,13 @@
   \lineskiplimit=0pt\leftskip=\columnshift%\lineskip=10pt
   \noindent % starting making new paragraph
   \ifRTL\beginR\fi % respect directionality
+  \tracingparagraphs=1
   \unhbox0 % unbox the text so it can be line-wrapped
   \unskip\unpenalty\unskip\unskip % remove internote skip info after last note
   % set penalty which allows breaking between notes unless this would cause
   % an extra line to be created.
   \linepenalty50
-  \par}
+  \par\tracingparagraphs=0}
 %
 % make box0 = an hbox contining all the contents of this class
 \def\makehboxofhboxes{%
@@ -330,7 +331,8 @@
   \ifhbox0{\removehboxes}\unhbox0\internotespace\fi}
 %
 % skip between notes in paragraph. skip is good place to break.
-\def\internotespace{\hfil\hskip\intern@teskip\penalty-10\hfilneg}
+\def\internotespace{\hfil\hskip\intern@teskip\hfilneg}
+%\def\internotespace{\hfil\hskip\intern@teskip\penalty-10\hfilneg}
 
 % don't allow stretching between notes.
 \newskip\intern@teskip \intern@teskip=15pt% plus 5pt minus 5pt
