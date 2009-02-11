@@ -57,6 +57,7 @@
  \def\startch@rstyle@nl_{\startch@rstyle}
 }
 \def\startch@rstyle{\TRACE{startch@rstyle}%
+  \ifnum\n@tenesting>1 \global\edef\tempch@rstyle{\newch@rstyle}\edef\newch@rstyle{\thisch@rstyle}\endch@rstyle*\edef\newch@rstyle{\tempch@rstyle}\fi
   \t@stpublishability{\newch@rstyle}\ifn@npublishable
    \setbox0=\hbox\bgroup\skipch@rstyletrue
    \let\thisch@rstyle=\newch@rstyle
