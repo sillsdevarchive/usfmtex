@@ -330,7 +330,8 @@
   \ifhbox0{\removehboxes}\unhbox0\internotespace\fi}
 %
 % skip between notes in paragraph. skip is good place to break.
-\def\internotespace{\hfil\hskip\intern@teskip\penalty0\hfilneg}
+\def\internotepenalty{-10}
+\def\internotespace{\hfil\hskip\intern@teskip\penalty\internotepenalty\hfilneg}
 %\def\internotespace{\hfil\hskip\intern@teskip\penalty-10\hfilneg}
 
 % don't allow stretching between notes.
