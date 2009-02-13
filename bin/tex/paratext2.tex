@@ -61,7 +61,7 @@
 % initialize a \timestamp macro for the cropmarks etc to use
 \edef\timestamp{\number\year.% print the date and time of the run
   \ifnum\month<10 0\fi \number\month.%
-  \ifnum\day<10 0\fi \number\day\space -- }%
+  \ifnum\day<10 0\fi \number\day\space :: }%
 \count255=\time \divide\count255 by 60
 \edef\timestamp{\timestamp
   \ifnum\count255<10 0\fi \number\count255:}%
