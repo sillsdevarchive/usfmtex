@@ -511,19 +511,22 @@
 	  \setbox\colB=\vsplit\s@vedpage to \colhtB \setbox\colB=\vbox{\unvbox\colB}
 	\fi
 	% assemble final content of columns
-	\dimen0=\dp\colA \setbox\colA=\vbox to \availht{\unvbox\topleftins\unvbox\colA\vfil\unvbox\bottomleftins}\dp\colA=\dimen0
-	\dimen0=\dp\colB \setbox\colB=\vbox to \availht{\unvbox\toprightins\unvbox\colB\vfil\unvbox\bottomrightins}\dp\colB=\dimen0
+	\dimen0=\dp\colA \setbox\colA=\vbox{\unvbox\topleftins\unvbox\colA\vfil\unvbox\bottomleftins}\dp\colA=\dimen0
+	\dimen0=\dp\colB \setbox\colB=\vbox{\unvbox\toprightins\unvbox\colB\vfil\unvbox\bottomrightins}\dp\colB=\dimen0
+	\ifdim\ht\colA>\ht\colB \dimen3=\ht\colA\dimen0=\dp\colA\dp\colB=\dimen0\else
+	  \dimen3=\ht\colB\dimen0=\dp\colB\dp\colA=\dimen0\fi
+	\ht\colA=\the\availht \ht\colB=\the\availht
 	% define pagecontents for use by \plainoutput below
 	\def\pagecontents{%
 	  \ifvoid\partial\else \unvbox\partial \fi % output partial page
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi % output top spanning pictures
-	  \dimen0=\ifdim\dp\colB>\dp\colA \dp\colB \else \dp\colA \fi % calc depth of deepest column
-	  \ifdim\colhtA>\colhtB \dimen3=\colhtA\advance\dimen3\dp\colA \else \dimen3=\colhtB\advance\dimen3\dp\colB \fi
+	  %\ifdim\dp\colB>\dp\colA \dimen0=\dp\colB\dp\colA=\dimen0 \else \dimen0=\dp\colA\dp\colB=\dimen0 \fi % calc depth of deepest column
+	  %\ifdim\colhtA>\colhtB \dimen3=\colhtA \else \dimen3=\colhtB\fi
 	  \trace{p}{Text depth = \the\dimen3}%\showthe\dimen0
 	  % determine order of columns based on text direction
 	  \dimen1=\textwidth
-	  \hbox to \dimen1{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}\box\colA
-		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}\box\colB \fi}
+	  \hbox to \dimen1{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colA
+		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}
 	  \ifvoid\bottomins\else \vskip\skip\bottomins \unvbox\bottomins \fi % ouput bottom spanning pictures
 	  \f@rstnotetrue
 	  \let\\=\ins@rtn@tecl@ss \the\n@tecl@sses % output all note classes
@@ -563,9 +566,17 @@
 \newdimen\columnshift
 \newdimen\ColumnGutterRuleSkip \ColumnGutterRuleSkip=0pt
 
-\def\makecolumngutter#1#2{\hfil
-	\dimen4=#1\advance\dimen4-\ColumnGutterRuleSkip
-	\ifColumnGutterRule \vbox to #2{\vskip\the\ColumnGutterRuleSkip\hbox to 1pt{\vrule height \the\dimen4}\vfil}\hfil\hbox to \columnshift{}\fi}
+\def\makecolumngutter#1#2#3{\hfil
+	\dimen4=#1\advance\dimen4-\ColumnGutterRuleSkip%\advance\dimen4 by #3
+	\ifColumnGutterRule
+	  \setbox4=\vbox to #2{
+		\vskip\ColumnGutterRuleSkip
+		\hbox to 1pt{\vrule height \the\dimen4}%\dp5=#3 \box5
+		\vfil}
+	  \dp4=#3 \box4
+	\fi
+	\hfil
+	\hbox to \columnshift{}}
 \newif\ifColumnGutterRule
 
 \def\backingup{% this output routine is used when we reduce \vsize;
