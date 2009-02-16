@@ -515,6 +515,7 @@
 	\dimen0=\dp\colB \setbox\colB=\vbox{\unvbox\toprightins\unvbox\colB\vfil\unvbox\bottomrightins}\dp\colB=\dimen0
 	\ifdim\ht\colA>\ht\colB \dimen3=\ht\colA\dimen0=\dp\colA\dp\colB=\dimen0\else
 	  \dimen3=\ht\colB\dimen0=\dp\colB\dp\colA=\dimen0\fi
+	\ifdim\ht\colB<1pt\setbox\colB\vbox{\noindent\par}\fi
 	\ht\colA=\the\availht \ht\colB=\the\availht
 	% define pagecontents for use by \plainoutput below
 	\def\pagecontents{%
