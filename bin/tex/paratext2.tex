@@ -208,7 +208,8 @@
 	  \ifvoid\partial\else \unvbox\partial \fi
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi
 	  \dimen0=\dp\colA
-	  \hbox to \textwidth{\hbox to \columnshift{}\box\colA\hfil}
+	  \hbox to \textwidth{%\hbox to \columnshift{}
+		\box\colA\hfil}
 	  \ifvoid\bottomins\else \vskip\skip\bottomins \unvbox\bottomins \fi
 	  \f@rstnotetrue
 	  \let\\=\ins@rtn@tecl@ss \the\n@tecl@sses
@@ -600,7 +601,7 @@
 	\ifhe@dings\endhe@dings\fi
 	\vfill\eject
 	\global\holdinginserts=1
-	\global\hsize=\textwidth \advance\hsize by -\columnshift
+	\global\hsize=\textwidth% \advance\hsize by -\columnshift
 	\global\vsize=\textheight
 	\global\output={\onecol}
 	\global\c@rrentcols=1
