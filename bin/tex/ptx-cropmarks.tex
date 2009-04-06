@@ -70,6 +70,8 @@
   }% end \vbox for \bottomcr@p
 }
 
+\newif\ifrotate\rotatefalse
+
 \def\shipwithcr@pmarks#1{% \shipout box #1, adding cropmarks if required
   \dimen0=0\ifCropMarks .5\fi in
   \advance\pdfpagewidth by 2\dimen0 % increase PDF media size
@@ -92,6 +94,11 @@
 		\else  \let\g@tterside=L \fi
 	  \fi
 	\fi
+	\XeTeXupwardsmode=0
+	\ifrotate
+	  \vbox to 0pt{\kern.5\PaperHeight
+		\hbox to 0pt{\kern.5\PaperHeight\special{x:gsave}\special{x:rotate -90}\hss}
+		\vss}\fi
 	\pl@ceborder % add PageBorder (or watermark) graphic, if defined
 	\offinterlineskip
 	\vbox to \pdfpageheight{\vss
@@ -105,6 +112,7 @@
 	  \vss}
 	\vss
 	\docr@pmarks
+	\ifrotate\special{x:grestore}\fi
   }%
 }
 
