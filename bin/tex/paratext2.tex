@@ -210,7 +210,7 @@
 	  \dimen0=\dp\colA
 	  \hbox to \textwidth{%\hbox to \columnshift{}
 		\box\colA\hfil}
-	  \ifvoid\bottomins\else \vskip\skip\bottomins \unvbox\bottomins \fi
+	  \ifvoid\bottomins\else\kern-\dimen0 \dimen0=0pt \vskip\skip\bottomins \unvbox\bottomins \fi
 	  \f@rstnotetrue
 	  \let\\=\ins@rtn@tecl@ss \the\n@tecl@sses
 	  \iff@rstnote % no notes actually occurred!
@@ -529,7 +529,7 @@
 	  \dimen1=\textwidth
 	  \hbox to \dimen1{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colA
 		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}
-	  \ifvoid\bottomins\else \vskip\skip\bottomins \unvbox\bottomins \fi % ouput bottom spanning pictures
+	  \ifvoid\bottomins\else \kern-\dimen0 \dimen0=0pt \vskip\skip\bottomins \unvbox\bottomins \fi % ouput bottom spanning pictures
 	  \f@rstnotetrue
 	  \let\\=\ins@rtn@tecl@ss \the\n@tecl@sses % output all note classes
 	  \iff@rstnote % no notes actually occurred!
