@@ -38,6 +38,6 @@
 \def\initmyverse{\let\v=\myv}
 \addtoinithooks{\initmyverse}%
 \def\printv@rse{\AdornVerseNumber{\v@rsefrom}\ifx\v@rsefrom\v@rseto
-				 \else -\penalty\hyphenpenalty \AdornVerseNumber{\v@rseto}\fi}
+				 \else\setbox0\hbox{-} -\kern-\wd0\kern\wd0\penalty\hyphenpenalty \AdornVerseNumber{\v@rseto}\fi}
 
 \endinput
