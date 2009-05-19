@@ -19,7 +19,7 @@
 	\vadjust{\getp@ram{baseline}{v}\ifx\p@ram\relax\let\p@ram\baselineskip\fi
 		%\kern -\dimen0\setbox1=\vbox to \dimen0{\llap{\unhbox2\kern\AfterVerseSpaceFactor\FontSizeUnit}}\dp1=0pt\box1}\nobreak
 		\kern -\dimen0\setbox1=\vbox{\llap{\vbox{\leftskip=0pt plus 1fill %
-			\rightskip=\z@skip\hsize=\dimen1\baselineskip=\p@ram
+			\rightskip=\z@skip\hsize=\dimen1 \baselineskip=\p@ram
 			\trace{v}{hs=\the\hsize , bl = \the\baselineskip}%
 			\noindent \unhbox2 \marginremovehboxes}%
 		  \kern\AfterVerseSpaceFactor\FontSizeUnit}}%
