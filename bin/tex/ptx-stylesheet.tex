@@ -445,8 +445,8 @@
  \advance\dimen0 by -\bottomm@rgin
  \textheight=\dimen0
  \vsize=\textheight
- \pdfpagewidth=\PaperWidth
- \pdfpageheight=\PaperHeight
+ \ifrotate\pdfpagewidth=\PaperHeight \pdfpageheight=\PaperWidth\else
+ \pdfpagewidth=\PaperWidth \pdfpageheight=\PaperHeight\fi
  \resetvsize
 }
 \newdimen\le@dingunit
