@@ -205,6 +205,7 @@
 %   \box\colA is the page content
 %   \availht is ht that definitely works
 	\def\pagecontents{%
+	  %\msg{upwards mode = \the\XeTeXupwardsmode}
 	  \ifvoid\partial\else \unvbox\partial \fi
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi
 	  \dimen0=\dp\colA
