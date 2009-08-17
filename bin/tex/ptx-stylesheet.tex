@@ -95,8 +95,7 @@
 % csname is required here in order to build a macro name containing a colon and possibly a number.
 %
 \def\defp@ram#1#2{\x@\def\csname\m@rker:#1\endcsname{#2}}
-\def\setp@ram#1#2#3{\x@\def\csname#2:#1\endcsname{#3}}
-
+\def\setp@ram#1#2#3{\x@\xdef\csname#2:#1\endcsname{#3}} % expand now, not later
 %
 % \getp@aram: fetch the value of a style parameter into \p@ram
 %   #1 -> name of parameter to fetch
