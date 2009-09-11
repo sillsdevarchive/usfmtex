@@ -1,8 +1,8 @@
 \newcount\diglotTRcount%
 %\def\TRshipout#1{\shipout#1}
 \def\TRshipout#1{}
-\def\b@xbotmark{}
-\def\TRACEdiglot#1{\global\advance\diglotTRcount by 1 \MSG{\the\diglotTRcount: #1}}%
+%\def\TRACEdiglot#1{\global\advance\diglotTRcount by 1 \MSG{\the\diglotTRcount: #1}}%
+\def\TRACEdiglot#1{}
 \newif\ifdiglot %If there is diglot material
 \diglotfalse%
 \newif\ifdiglotSepNotes %If the footnotes from the versions should be split (true) or merged together
@@ -10,6 +10,7 @@
 \newif\ifdiglotBalNotes %If a left column footnote steals space from the right column also
 \diglotBalNotesfalse%
 \global\def\n@xtc@mmand{}%
+\def\b@xbotmark{}
 
 %\partial % Partial page (both columns)
 \newbox\partialL \setbox\partialL=\vbox{} % Partial page, on the left side
