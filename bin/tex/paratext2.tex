@@ -85,6 +85,7 @@
 \input ptx-callers.tex % must come after ptx-note-style.tex
 % Additional modules that are not part of the normal ptx2pdf module
 \input ptxplus-character-kerning.tex
+\input diglot.tex
 
 % default font names (override in setup file)
 \ifx\regular\undefined   \def\regular{"Times New Roman"}      \fi
@@ -107,29 +108,32 @@
   \@sf \vm@kenote{#1}{#2}}
 
 \def\vm@kenote#1#2{%
-  \let\next\relax
-  \x@\insert\csname note-#1\endcsname\bgroup % insert note-f (or note-x)
+  \let\next\relax%
+  \def\n@tetype{#1}%
+  \ifdiglot\ifdiglotSepNotes\ifdiglotL\def\n@tetype{#1L}\else\def\n@tetype{#1R}\fi\fi\fi%
+  \TRACE{vm@kenote \n@tetype}%
+  \x@\insert\csname note-\n@tetype\endcsname\bgroup% insert note-f (or note-x)
 %%% single-column notes:
   \checkp@ranotes{#1}% check whether this note class is to be paragraphed
-  \hsize=\ifp@ranotes\maxdimen\else\textwidth\advance\hsize by -\columnshift\fi
+  \hsize=\ifp@ranotes\maxdimen\else\textwidth\advance\hsize by -\columnshift\fi%
   % insert penalties to control breaking of footnotes
   \interlinepenalty\interfootnotelinepenalty % set penalty to break lines
   \floatingpenalty\@MM % make sure note does not float away from caller to another page
   \leftskip\z@skip \rightskip\z@skip \spaceskip\z@skip \xspaceskip\z@skip % reset extra space around paragraph 0
-  \s@tbaseline{#1}
-  \ifp@ranotes\else\setbox0=\hbox{\XeTeXuseglyphmetrics=0 \char32}\dimen0=\ht0
-	  \ifdim\dimen0<\baselineskip
-		\dimen1=\baselineskip\advance\dimen1 by -\dimen0
-		\vskip\dimen1
-		\trace{f}{\reference : Footnote vskip=\the\dimen1 baselineskip=\the\baselineskip strut height=\the\dimen0}
-	  \fi\fi
+  \s@tbaseline{#1}%
+  \ifp@ranotes\else\setbox0=\hbox{\XeTeXuseglyphmetrics=0 \char32}\dimen0=\ht0%
+	  \ifdim\dimen0<\baselineskip%
+		\dimen1=\baselineskip\advance\dimen1 by -\dimen0%
+		\vskip\dimen1%
+		\trace{f}{\reference : Footnote vskip=\the\dimen1 baselineskip=\the\baselineskip strut height=\the\dimen0}%
+	  \fi\fi%
   \leavevmode % begin paragraph
-  \ifRTL\setbox2=\lastbox\beginR\box2\fi % if RTL text this paragraph needs to be RTL
+  \ifRTL\setbox2=\lastbox\beginR\box2\fi% if RTL text this paragraph needs to be RTL
   % if note omitting caller from note (i.e. all callers are *'s)
-  \testomitc@ller{#1}\ifomitc@ller\else
+  \testomitc@ller{#1}\ifomitc@ller\else%
 	% save copy of caller in temporary box, if non-empty add a little space
-	\setbox0=\hbox{#2}#2\ifdim\wd0>0pt\kern.2em\fi
-  \fi
+	\setbox0=\hbox{#2}#2\ifdim\wd0>0pt\kern.2em\fi%
+  \fi%
   % currently we do not allow footnotes to break to the next page, so this may not be necessary
 %  \splittopskip\ht\f@@tstrut % top baseline for broken footnotes
 %  \splitmaxdepth\dp\f@@tstrut
@@ -166,10 +170,16 @@
 % set baseline appropriately for the given style (may be using much smaller font than body)
 % baselineskip = leading
 \def\s@tbaseline#1{%
+  \ifdiglot\ifdiglotL\def\f@ntstyle{#1L}\else\def\f@ntstyle{#1R}\fi\else\def\f@ntstyle{#1}\fi%
   \getp@ram{baseline}{#1}\ifx\p@ram\relax
+  \dimen0=0pt %
+  \fi%
+  \TRACE{p@ram=dimen0=\the\dimen0}%
+  \ifdim\dimen0=0pt %
 	\getp@ram{fontsize}{#1}\dimen0=\p@ram\le@dingunit
 	\multiply\dimen0 by 14 \divide\dimen0 by 12
-	\setp@ram{baseline}{#1}{\the\dimen0}\baselineskip=\dimen0\else
+	\message{s@tbaseline for \f@ntstyle = \the\dimen0}
+	\x@\setp@ram{baseline}{\f@ntstyle}{\the\dimen0}\baselineskip=\dimen0\else
   \baselineskip=\p@ram\fi}
 
 % default output routine is single-column, somewhat based on Plain TeX output routine (see TeXbook)
@@ -242,10 +252,11 @@
 
 \def\pagebody{\vbox to\textheight{\boxmaxdepth\maxdepth \pagecontents}}
 \def\makeheadline{%
+  \def\f@ntstyle{h\ifdiglot\ifdiglotL L\else R\fi\fi}
   \vbox to 0pt{\kern-\topm@rgin
    \vbox{\kern\HeaderPosition\MarginUnit
 	\setbox0=\hbox to \textwidth{\the\headline}
-	\ht0=0.7\fontdimen6\csname font<h>\endcsname \dp0=0pt \box0
+	\ht0=0.7\fontdimen6\csname font<\f@ntstyle>\endcsname \dp0=0pt \box0
 	\ifrhr@le\ifdim\RHruleposition=\maxdimen\else
 	  \kern\RHruleposition\hrule
 	\fi\fi}\vss}\nointerlineskip}
@@ -258,52 +269,79 @@
 \newdimen\RHruleposition \RHruleposition=\maxdimen
 
 \def\ins@rtn@tecl@ss#1{% insert the given note class, either paragraphed or separately
+  \TRACE{ins@rtn@tecl@ss #1}%
+  \iff@rstnote\setn@tewidth\fi % ignore depth of body text; fill space
   \checkp@ranotes{#1}\ifp@ranotes\let\n@xt=\parains@rtn@tecl@ss
 	\else\let\n@xt=\separateins@rtn@tecl@ss\fi
   \n@xt{#1}}
 
 % insert a note class in which each note is on its own line
 \def\separateins@rtn@tecl@ss#1{%
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname % make \th@cl@ss be a synonym for the current note class
+  \def\cl@ss{#1}%
+  \ifdiglot\ifdiglotSepNotes\ifdiglotL\def\cl@ss{#1L}\else\def\cl@ss{#1R}\fi\fi\fi%
+  \TRACE{seperateins@rtn@tecl@ss \cl@ss}%
+  \x@\let\x@\th@cl@ss\csname note-\cl@ss\endcsname % make \th@cl@ss be a synonym for the current note class
   % if the noteclass has content to output ...
-  \ifvoid\th@cl@ss\else
+  \ifvoid\th@cl@ss\TRACE{no note}\else%
 	\iff@rstnote\kern-\dimen0\vfil\fi % ignore depth of body text; fill space
 	\vskip\AboveNoteSpace % output above note class space
-	\iff@rstnote\footnoterule\f@rstnotefalse\fi % output rule before first note
+	\iff@rstnote\footnoterule\global\f@rstnotefalse\fi % output rule before first note
 	\unvbox\th@cl@ss\fi}% output notes
 
 % insert a note class in which each note is in the same paragraph
 \def\parains@rtn@tecl@ss#1{%
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname % make \th@cl@ss be a synonym for the current note class
+  \def\cl@ss{#1}%
+  \ifdiglot\ifdiglotSepNotes\ifdiglotL\def\cl@ss{#1L}\else\def\cl@ss{#1R}\fi\fi\fi%
+  \TRACE{parains@rtn@tecl@ss \cl@ss}%
+  \x@\let\x@\th@cl@ss\csname note-\cl@ss\endcsname % make \th@cl@ss be a synonym for the current note class
   % if the noteclass has content to output ...
-  \ifvoid\th@cl@ss\else
+  \ifvoid\th@cl@ss\TRACE{no note}\else%
 	\iff@rstnote\kern-\dimen0\vfil\fi % ignore depth of body text; fill space
 	\vskip\AboveNoteSpace
-	\iff@rstnote{\footnoterule}\f@rstnotefalse\fi % output rule before first note
+	\iff@rstnote{\footnoterule}\global\f@rstnotefalse\fi % output rule before first note
 	{\maken@tepara{\th@cl@ss}{#1}}%
   \fi}
 
 \newif\iff@rstnote
-\def\footnoterule{\kern-0.5\AboveNoteSpace\kern-.4pt % the \hrule is .4pt high
-  \dimen0=\textwidth\advance\dimen0 by -\columnshift\toks0=\everypar\everypar={}\parskip=0pt\baselineskip=0pt\parindent=0pt\let\par=\endgraf\parfillskip=0pt%
+\def\footnoterule{\TRACE{footnoterule}\kern-0.5\AboveNoteSpace\kern-.4pt % the \hrule is .4pt high
+  \setn@tewidth
+  \dimen0=\n@tewidth\advance\dimen0 by -\columnshift\toks0=\everypar\everypar={}\parskip=0pt\baselineskip=0pt\parindent=0pt\let\par=\endgraf\parfillskip=0pt%
 %  \noindent\hbox{\noindent\kern\columnshift\vbox{\hrule width \dimen0}}\par
   \hbox{\kern\columnshift
 	\vrule height 0.4pt width \dimen0}\kern0pt%
 	%\kern0.5\AboveNoteSpace
 \everypar=\toks0}
-
 % determine if a given note class is to be paragraphed
-\def\ParagraphedNotes#1{\x@\let\csname paranotes-#1\endcsname=1}
+\def\ParagraphedNotes#1{\Par@gr@phedNotes{#1}\ifdiglot\ifdiglotSepNotes\Par@gr@phedNotes{#1L}\Par@gr@phedNotes{#1R}\else\Par@gr@phedNotes{#1}\fi\fi}
+\def\Par@gr@phedNotes#1{\TRACE{Par@gr@phedNotes #1}\x@\let\csname paranotes-#1\endcsname=1}
 \newif\ifp@ranotes
-\def\checkp@ranotes#1{\x@\ifx\csname paranotes-#1\endcsname\relax
+\def\checkp@ranotes#1{\TRACE{checkp@ranotes #1}\x@\ifx\csname paranotes-#1\endcsname\relax%
   \p@ranotesfalse\else\p@ranotestrue\fi}
 
+% Notewidth for diglots depends on settings and column.
+\newdimen\n@tewidth
+\def\setn@tewidth{%
+  \ifdiglot%
+	\ifdiglotSepNotes%
+	  \ifdiglotL%
+		\n@tewidth=\columnLwidth%
+	  \else%
+		\n@tewidth=\columnRwidth%
+	  \fi%
+	\else%
+	  \n@tewidth=\textwidth%
+	\fi%
+  \else%
+	\n@tewidth=\textwidth%
+  \fi%
+}
 % reformat the contents of a note class insertion into a single paragraph.
 % this is usually done for \x. It is sometimes done for \f.
 % (based on code from the TeXbook, appendix D)
 % #1 is vbox containing notes as individual paragraphs.
 \def\maken@tepara#1#2{%
-  \hsize=\textwidth%\advance\hsize by -\columnshift % width is full page size
+  \setn@tewidth
+  \hsize=\n@tewidth
   \let\par=\endgraf\ch@pterfalse
   \everypar={}% don't do body text formatting
   \unvbox#1 % open up the vbox of notes to get at the list of individual note boxes
@@ -353,26 +391,55 @@
 	  \global\output={\onecol} % but output it immediately if 75% full
 	  \unvbox\partial\vfill\eject
 	\fi
-	% reset parameters for 2-column formatting
-	\global\hsize=\colwidth
-	\global\vsize=2\textheight % in 2 col mode you can put twice the height of text
+	\ifdiglot
+	  % reset parameters for diglot-column formatting
+	  \global\hsize=\columnLwidth % always start with left column
+	  \global\vsize=\textheight %
+	\global\advance\vsize by 0.5\baselineskip % don't get caught short by 1/2 line or so
+	\global\advance\vsize by -\ht\partial % Don't mis-inform tex
+	  \gdef\resetvsize{\global\vsize=\textheight \global\advance\vsize by -\ht\partial \global\advance\vsize by 0.5\baselineskip}
+	  \global\availht=\vsize
+	  %\TRACE{HERE}
+	  %\global\output={\diglotLeft}
+	  \global\c@rrentcols=2
+	  % top and bottom inserts effectively use twice their height
+	% (\count of an insertion class is a scaling factor)
+	  \count255=1000
+	  \global\count\topins=\count255
+	  \global\count\bottomins=\count255
+	\else
+	  % reset parameters for 2-column formatting
+	  \global\hsize=\colwidth
+	  \global\vsize=2\textheight % in 2 col mode you can put twice the height of text
 	\global\advance\vsize by -2\ht\partial % subtract height of 1 column material
 	\global\advance\vsize by \baselineskip % don't get caught short by 1/2 line or so
 	% make a macro reset vsize for remaining pages which do not have 1 column material
-	\gdef\resetvsize{\global\vsize=2\textheight \global\advance\vsize by \baselineskip}
-	\global\output={\twocols}
-	\global\c@rrentcols=2
-	% top and bottom inserts effectively use twice their height
+	  \gdef\resetvsize{\global\vsize=2\textheight \global\advance\vsize by \baselineskip}
+	  \global\output={\twocols}
+	  \global\c@rrentcols=2
+	  % top and bottom inserts effectively use twice their height
 	% (\count of an insertion class is a scaling factor)
-	\count255=2000
-	\global\count\topins=\count255
-	\global\count\bottomins=\count255
+	  \count255=2000
+	  \global\count\topins=\count255
+	  \global\count\bottomins=\count255
+	\fi
 	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
 	\global\holdinginserts=1 % don't pull out inserts yet, we are still adjusting page
   \fi}
 
 % iterate over note classes, set \count for each class
 \def\s@tn@tec@unt#1{%
+  \ifdiglot\ifdiglotSepNotes%
+	  \s@tn@t@c@unt{#1L}%%
+	  \s@tn@t@c@unt{#1R}%
+	 \else%
+	  \s@tn@t@c@unt{#1}%
+  \else%
+	 \s@tn@t@c@unt{#1}%
+  \fi%
+}
+
+\def\s@tn@t@c@unt#1{%
   \x@\let\x@\th@cl@ss\csname note-#1\endcsname
   \checkp@ranotes{#1}%
   % notes made into paragraphs (e.g. \x) are counted as 0 height for now,
@@ -410,30 +477,144 @@
 % for measuring the space needed for each class of notes;
 % this will decrease \availht by the space needed for the given class
 \def\reduceavailht#1{%
+  \TRACE{reduceavailht #1}%
   \checkp@ranotes{#1}%
-  \ifp@ranotes\let\n@xt=\reduceavailht@para
-  \else\let\n@xt=\reduceavailht@sep\fi
-  \n@xt{#1}}
+  \def\cl@ss{#1}%
+  %\TRACE{av: \the\availht =>}%
+  \ifp@ranotes%
+	\let\n@xt=\reduceavailht@para%
+	\relax%
+	\ifdiglot\ifdiglotSepNotes%
+		\ifdiglotBalNotes%
+		  \let\n@xt=\reduceavailht@para@bal%
+		\fi%
+	\fi\fi%
+  \else%
+	\let\n@xt=\reduceavailht@sep%
+	\relax%
+	\ifdiglot\ifdiglotSepNotes%
+		\ifdiglotBalNotes%
+		  \let\n@xt=\reduceavailht@sep@bal%
+	\fi%
+	\fi\fi%
+  \fi%
+  \n@xt{\cl@ss}%
+  %\TRACE{... \the\availht}}
 
-\def\reduceavailht@para#1{
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
-  \ifvoid\th@cl@ss\else
-	\setbox0=\copy\th@cl@ss
-	\setbox0=\vbox{\maken@tepara{0}{#1}}
-	\advance\availht by -\ht0
-	\advance\availht by -\dp0
-	\advance\availht by -0.5\AboveNoteSpace
-	\getp@ram{baseline}{#1}\advance\availht-\p@ram
+\def\reduceavailht@para#1{%
+  \TRACE{reduceavailht@para #1}%
+  \def\cl@sss{#1}%
+  \ifdiglot\ifdiglotSepNotes%
+	  \ifdiglotL%
+		\def\cl@sss{#1L}%
+	  \else%
+		\def\cl@sss{#1R}%
+		  \fi%
+  \fi\fi%
+  \TRACE{class \cl@sss}%
+  \relax
+  \x@\let\x@\th@cl@ss\csname note-\cl@sss\endcsname%
+  \relax
+  \ifvoid\th@cl@ss\else%
+	\setbox0=\copy\th@cl@ss%
+	\setbox0=\vbox{\maken@tepara{0}{#1}}%
+	\message{reduceavailht@para for #1 ht0=\the\ht0 dp0=\the\dp0 ans=\the\AboveNoteSpace}%
+	\global\advance\availht by -\ht0%
+	\global\advance\availht by -\dp0%
+	\global\advance\availht by -1.0\AboveNoteSpace%
+	\getp@ram{baseline}{#1}\advance\availht-\p@ram%
+	\message{p@ram=\p@ram, \the\dimen0}%
   \fi}
-\def\reduceavailht@sep#1{
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
-  \ifvoid\th@cl@ss\else
-	\advance\availht by -\ht\th@cl@ss
-	\advance\availht by -\dp\th@cl@ss
-	\advance\availht by -\AboveNoteSpace
+
+\def\reduceavailht@para@bal#1{%
+  \TRACE{reduceavailht@para@bal #1}%
+  \x@\let\x@\th@cl@ssL\csname note-#1L\endcsname%
+  \bgroup%leave dimen0 etc unchanged
+  \dimen0=0pt%
+  %FIXME: This code should adjust & restore diglotL%
+  \ifvoid\th@cl@ssL\else%
+	\setbox0=\copy\th@cl@ssL%
+	\setbox0=\vbox{\maken@tepara{0}{#1}}%
+	\message{reduceavailht@para@bal for #1L ht0=\the\ht0 dp0=\the\dp0}%
+	\dimen0=\ht0%
+	\advance\dimen0 by \dp0%
+  \fi%
+  \x@\let\x@\th@cl@ssR\csname note-#1R\endcsname%
+  \dimen1=0pt%
+  \ifvoid\th@cl@ssR\else%
+	\setbox0=\copy\th@cl@ssR%
+	\setbox0=\vbox{\maken@tepara{0}{#1}}%
+	\message{reduceavailht@para@bal for #1R ht1=\the\ht1 dp1=\the\dp1}%
+	\dimen1=\ht0%
+	\advance\dimen1 by \dp0%
+  \fi%
+  \ifnum\dimen1>\dimen0%
+	\dimen0=\dimen1%
+  \fi%
+  \ifdim\dimen0>0pt%
+	\advance\availht by -\dimen0%
+	\advance\availht by -1.0\AboveNoteSpace%
+	\getp@ram{baseline}{#1}\advance\availht-\p@ram%
+	\message{p@ram=\p@ram}%
+  \fi\egroup}
+
+\def\reduceavailht@sep#1{%
+  %\tracingall
+  \TRACE{reduceavailht@sep #1}%
+  \def\cl@sss{#1}%
+  \ifdiglot\ifdiglotSepNotes%
+	  \ifdiglotL%
+		\def\cl@sss{#1L}%
+	  \else%
+		\def\cl@sss{#1R}%
+		  \fi%
+  \fi\fi%
+  %\TRACE{class \cl@sss}
+  \x@\let\x@\th@cl@sss\csname note-\cl@sss\endcsname%
+  %\TRACE{rah@s: \the\th@cl@sss}
+  \ifvoid\th@cl@sss
+	%\TRACE{reduceavailht@sep \cl@sss void}
+  \else%
+	%\TRACE{Reduceavailht@sep \the\availht ->}
+	\global\advance\availht by -\ht\th@cl@sss%
+	\global\advance\availht by -\dp\th@cl@sss%
+	\global\advance\availht by -\AboveNoteSpace%
+	%\TRACE{\the\availht}
   \fi}
+
+\def\reduceavailht@sep@bal#1{%
+  \TRACE{reduceavailht@sep@bal}%
+  \x@\let\x@\th@cl@ssR\csname note-#1L\endcsname%
+  \x@\let\x@\th@cl@ssL\csname note-#1R\endcsname%
+  \dimen0=0pt\dimen1=0pt%
+  \ifvoid\th@cl@ssL\else%
+	\dimen0=\ht\th@cl@ssL%
+	\advance\dimen0 by \dp\th@cl@ssL%
+  \fi%
+  \ifvoid\th@cl@ssR\else%
+	\dimen1=\ht\th@cl@ssR%
+	\advance\dimen1 by \dp\th@cl@ssR%
+  \fi%
+  \ifdim\dimen0>0pt%
+	\advance\availht by -\dimen0%
+	\advance\availht by -\AboveNoteSpace%
+  \fi}
+
 \def\cle@rn@tecl@ss#1{%
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
+  \ifdiglot%
+	\ifdiglotSepNotes%
+	   \cle@rn@t@cl@ss{#1L}%
+	   \cle@rn@t@cl@ss{#1R}%
+	\else%
+	   \cle@rn@t@cl@ss{#1}%
+	\fi%
+  \else%
+	\cle@rn@t@cl@ss{#1}%
+  \fi%
+}
+
+\def\cle@rn@t@cl@ss#1{%
+  \x@\let\x@\th@cl@ss\csname note-#1\endcsname%
   \global\setbox\th@cl@ss=\box\voidb@x}
 
 % increment or decrement a given \dimen by the height of a given \box, unless void
@@ -598,21 +779,40 @@
 
 % to switch back to single column, we reset the page size parameters
 \def\singlecolumn{%
-  \ifnum\c@rrentcols>1
-	\ifhe@dings\endhe@dings\fi
-	\vfill\eject
-	\global\holdinginserts=1
-	\global\hsize=\textwidth% \advance\hsize by -\columnshift
-	\global\vsize=\textheight
-	\global\output={\onecol}
-	\global\c@rrentcols=1
+  \ifdiglot
+	% reset parameters for diglot-column formatting
+	\global\hsize=\columnLwidth % always start with left column
+	\global\vsize=\textheight %
+	  \global\advance\vsize by 0.5\baselineskip % don't get caught short by 1/2 line or so
+	  \global\advance\vsize by -\ht\partial % Don't mis-inform tex
+	\gdef\resetvsize{\global\vsize=\textheight \global\advance\vsize by -\ht\partial \global\advance\vsize by 0.5\baselineskip}
+	\global\availht=\vsize
+	%\TRACE{HERE}
+	%\global\output={\diglotLeft}
+	\global\c@rrentcols=2
+	% top and bottom inserts effectively use twice their height
+	  % (\count of an insertion class is a scaling factor)
 	\count255=1000
 	\global\count\topins=\count255
 	\global\count\bottomins=\count255
-	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
-	\box\partial
-	\vskip\baselineskip
-  \fi}
+  \else
+	\ifnum\c@rrentcols>1
+	  \ifhe@dings\endhe@dings\fi
+	  \vfill\eject
+	  \global\holdinginserts=1
+	  \global\hsize=\textwidth% \advance\hsize by -\columnshift
+	  \global\vsize=\textheight
+	  \global\output={\onecol}
+	  \global\c@rrentcols=1
+	  \count255=1000
+	  \global\count\topins=\count255
+	  \global\count\bottomins=\count255
+	  \let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
+	  \box\partial
+	  \vskip\baselineskip
+	\fi
+  \fi
+  }
 
 \count\topins=1000 \dimen\topins=\maxdimen \skip\topins=0pt
 \newinsert\bottomins \count\bottomins=1000 \dimen\bottomins=\maxdimen
@@ -650,18 +850,26 @@
   \ifx\loc@ption\loc@T \let\p@cins=\topins
   \else\ifx\loc@ption\loc@B \let\p@cins=\bottomins
   \else
-	  \ifnum\c@rrentcols>1
-		\ifx\loc@ption\loc@TL \let\p@cins=\topleftins
-		\else\ifx\loc@ption\loc@TR \let\p@cins=\toprightins
-		\else\ifx\loc@ption\loc@BL \let\p@cins=\bottomleftins
-		\else\ifx\loc@ption\loc@BR \let\p@cins=\bottomrightins
-		\fi\fi\fi\fi
-	  \else
+	  \ifdiglot
 		\ifx\loc@ption\loc@TL \picw@rning{tl}{t}\let\p@cins=\topins
 		\else\ifx\loc@ption\loc@TR \picw@rning{tr}{t}\let\p@cins=\topins
 		\else\ifx\loc@ption\loc@BL \picw@rning{bl}{b}\let\p@cins=\bottomins
 		\else\ifx\loc@ption\loc@BR \picw@rning{br}{b}\let\p@cins=\bottomins
 		\fi\fi\fi\fi
+	  \else
+	   \ifnum\c@rrentcols>1
+		 \ifx\loc@ption\loc@TL \let\p@cins=\topleftins
+		 \else\ifx\loc@ption\loc@TR \let\p@cins=\toprightins
+		 \else\ifx\loc@ption\loc@BL \let\p@cins=\bottomleftins
+		 \else\ifx\loc@ption\loc@BR \let\p@cins=\bottomrightins
+		 \fi\fi\fi\fi
+	   \else
+		 \ifx\loc@ption\loc@TL \picw@rning{tl}{t}\let\p@cins=\topins
+		 \else\ifx\loc@ption\loc@TR \picw@rning{tr}{t}\let\p@cins=\topins
+		 \else\ifx\loc@ption\loc@BL \picw@rning{bl}{b}\let\p@cins=\bottomins
+		 \else\ifx\loc@ption\loc@BR \picw@rning{br}{b}\let\p@cins=\bottomins
+		 \fi\fi\fi\fi
+	   \fi
 	  \fi
   \fi\fi
   \ifx\p@cins\relax

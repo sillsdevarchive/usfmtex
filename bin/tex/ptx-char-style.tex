@@ -115,7 +115,8 @@
 % Set up the font attributes for a given marker (used by all style types, not only char styles)
 %
 \def\s@tfont#1{%
- \x@\ifx\csname font<#1>\endcsname \relax % check if font identifier for this style has been created
+ \ifdiglot\ifdiglotL\def\f@ntstyle{#1L}\else\def\f@ntstyle{#1R}\fi\else\def\f@ntstyle{#1}\fi%
+ \x@\ifx\csname font<\f@ntstyle>\endcsname \relax % check if font identifier for this style has been created
   \let\typef@ce=\regular
   \getp@ram{superscript}{#1}% scale down by \SuperscriptFactor if superscripted style
   \dimen0=\ifx\p@ram\tru@ \SuperscriptFactor\fi\FontSizeUnit
@@ -139,10 +140,10 @@
 	\def\p@ram{12}\fi
   % create the font identifier for this style
   \x@\global\x@\font
-	\csname font<#1>\endcsname=\typef@ce\space at \p@ram \dimen0
+	\csname font<\f@ntstyle>\endcsname=\typef@ce\space at \p@ram \dimen0
  \fi
  % switch to the appropriate font
- \csname font<#1>\endcsname
+ \csname font<\f@ntstyle>\endcsname
 }
 \def\tru@{true}
 \def\SuperscriptFactor{0.75}
