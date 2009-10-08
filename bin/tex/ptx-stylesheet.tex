@@ -331,6 +331,7 @@
  \the\@nithooks
  \let\@netimesetup=\relax}
 
+\newif\ifendbooknoeject \enbooknoejectfalse
 % Read the files associated with this book: usfm, adjustment list, picture list
 \def\ptxfile#1{
  \@netimesetup
@@ -366,7 +367,7 @@
  \catcode`\#=6 \catcode`\%=14 % restore TeX meanings for those we might use
  \catcode`\{=1 \catcode`\}=2
  \singlecolumn
- \pagebreak}
+ \ifendbooknoeject\else\pagebreak\fi}
 \newread\t@stread
 \newtoks\AdjListPath % path to look for adjustment files
 \newtoks\PicListPath % path to look for picture list files
