@@ -766,7 +766,7 @@
 \def\pagebreak{%
   \ifsk@pping \egroup \fi
   \ifhe@dings\endhe@dings\fi
-  \ifendbooknoeject\else\vfill\eject\fi %% FIXME
+  \ifendbooknoeject\MSG{booknoeject}\else\MSG{bookeject}\vfill\eject\fi %% FIXME
   \ifnum\c@rrentcols=2
 %    \iffirstcol\else\line{}\vfill\eject\fi
   \fi
