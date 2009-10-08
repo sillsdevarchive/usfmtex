@@ -762,10 +762,11 @@
 \newcount\totalp@ges
 \newcount\whichp@ge
 
+\newif\ifendbooknoeject \endbooknoejectfalse
 \def\pagebreak{%
   \ifsk@pping \egroup \fi
   \ifhe@dings\endhe@dings\fi
-  \vfill\eject %% FIXME
+  \ifendbooknoeject\else\vfill\eject\fi %% FIXME
   \ifnum\c@rrentcols=2
 %    \iffirstcol\else\line{}\vfill\eject\fi
   \fi
