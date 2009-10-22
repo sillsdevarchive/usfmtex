@@ -466,6 +466,7 @@
 	  \vbox{\hbox to \textwidth{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colA
 		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}}}
 	\ht\partial=\dimen3
+	\global\holdinginserts=1
 	}
 
 
@@ -677,6 +678,7 @@
 \def\singlecolumn{%
   \ifnum\c@rrentcols>1
 	\ifhe@dings\endhe@dings\fi
+	\global\holdinginserts=0
 	\global\output={\savepartialpaged}\eject % save any partially-full page
 	\penalty-100\vskip\baselineskip % ensure blank line between single and double column material
 	\global\hsize=\textwidth% \advance\hsize by -\columnshift
