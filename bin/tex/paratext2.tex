@@ -111,8 +111,7 @@
   \x@\insert\csname note-#1\endcsname\bgroup % insert note-f (or note-x)
 %%% single-column notes:
   \checkp@ranotes{#1}% check whether this note class is to be paragraphed
-  \hsize=\ifp@ranotes\maxdimen\else\textwidth\advance\hsize by -\columnshift\fi
-  % insert penalties to control breaking of footnotes
+  \hsize=\ifp@ranotes\maxdimen\else\textwidth\advance\hsize by -\columnshift\fi % insert penalties to control breaking of footnotes
   \interlinepenalty\interfootnotelinepenalty % set penalty to break lines
   \floatingpenalty\@MM % make sure note does not float away from caller to another page
   \leftskip\z@skip \rightskip\z@skip \spaceskip\z@skip \xspaceskip\z@skip % reset extra space around paragraph 0
@@ -128,7 +127,7 @@
   % if note omitting caller from note (i.e. all callers are *'s)
   \testomitc@ller{#1}\ifomitc@ller\else
 	% save copy of caller in temporary box, if non-empty add a little space
-	\setbox0=\hbox{#2}#2\ifdim\wd0>0pt\kern.2em\fi
+	\setbox0=\hbox{#2}#2\ifdim\wd0>0pt\kern.2em\fi %
   \fi
   % currently we do not allow footnotes to break to the next page, so this may not be necessary
 %  \splittopskip\ht\f@@tstrut % top baseline for broken footnotes
@@ -188,7 +187,7 @@
 %%%  \msg{TRIAL with ht=\the\trialheight, vsize=\the\vsize}
   \edef\p@gebotmark{\botmark}% remember last \mark for running header
   \edef\t@st{\p@gefirstmark}%
-  \ifx\t@st\empty\edef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
+  \ifx\t@st\empty\xdef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
   \availht=\trialheight % amount of space we think is available
   \let\\=\reduceavailht \the\n@tecl@sses % reduce it by the space needed for each note class
   \decr{\availht}{\topins}% and by the space needed for spanning pictures
@@ -349,7 +348,7 @@
 	\penalty-100\vskip\baselineskip % ensure blank line between single and double column material
 	\global\output={\savepartialpage}\eject % save any partially-full page
 	% if single column material already fills 3/4 page, go to next page to start double columns
-	\ifdim\ht\partial>0.75\textheight
+	\ifdim\ht\partial>0.99\textheight
 	  \global\output={\onecol} % but output it immediately if 75% full
 	  \unvbox\partial\vfill\eject
 	\fi
@@ -394,7 +393,7 @@
 
 \def\savepartialpaged{%
   \edef\t@st{\p@gefirstmark}%
-  \ifx\t@st\empty\edef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
+  \ifx\t@st\empty\xdef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
   \global\trialheight=\textheight
   \availht=\trialheight % amount of space we think is available
 %%%
@@ -462,10 +461,12 @@
 	  \dimen3=\ht\colB\dimen0=\dp\colB\dp\colA=\dimen0\fi
 	\ifdim\ht\colB<1pt\setbox\colB\vbox{\noindent\par}\fi
 	\ht\colA=\the\availht \ht\colB=\the\availht
+	\dimen4=\ht\partial
 	\global\setbox\partial=\vbox{\unvbox\partial
+	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi % output top spanning pictures
 	  \vbox{\hbox to \textwidth{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colA
 		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}}}
-	\ht\partial=\dimen3
+	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
 	\global\holdinginserts=1
 	}
 
@@ -683,19 +684,20 @@
 	\penalty-100\vskip\baselineskip % ensure blank line between single and double column material
 	\global\hsize=\textwidth% \advance\hsize by -\columnshift
 	\global\vsize=\textheight
-	\global\output={\onecol}
 	\global\c@rrentcols=1
 %      \MSG{\the\ht\partial is > 0.75 times \the\textheight}
-	\ifdim\ht\partial>0.75\textheight
+	\ifdim\ht\partial>0.99\textheight
+	  \global\output={\twocols}
 	  \unvbox\partial\vfill\eject
 	\fi
+	\global\output={\onecol}
 	\global\holdinginserts=1
 	\count255=1000
 	\global\count\topins=\count255
 	\global\count\bottomins=\count255
 	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
 	\box\partial
-	\vskip\baselineskip
+	\ifx\p@gefirstmark\t@tle \else\hrule\vskip2\baselineskip\fi
   \fi}
 
 \count\topins=1000 \dimen\topins=\maxdimen \skip\topins=0pt

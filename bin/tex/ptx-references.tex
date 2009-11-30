@@ -48,7 +48,7 @@
 % (same as above unless there are bridged verses)
 %
 \def\l@stref#1{\edef\t@st{#1}\x@\extr@ctlast\t@st\relax
- \ifx\@@book\empty\else\ifOmitBookRef\else\@@book\ \fi\ifOmitChapterNumber\else\@@chapter\fi\ifVerseRefs\ifOmitChapterNumber\else\cvs@p\fi\@@verse\fi\fi}
+ \ifx\@@book\empty\else\ifx\@@book\t@tle\else\ifOmitBookRef\else\@@book\ \fi\ifOmitChapterNumber\else\@@chapter\fi\ifVerseRefs\ifOmitChapterNumber\else\cvs@p\fi\@@verse\fi\fi\fi}
 
 %
 % Print the range of references from a pair of marks
@@ -128,11 +128,11 @@
  \edef\t@st{\p@gefirstmark}% check first mark on page to see if this is a "title" page
  \global\rhr@letrue
  \ifx\t@st\empty \hfil \global\rhr@lefalse \else
-  \ifx\t@st\t@tle \the\titlehead \global\rhr@lefalse \else
-  \ifodd\pageno \the\oddhead \else
-	\ifDoubleSided \the\evenhead \else \the\oddhead \fi % for single-sided, all pages are "odd"
-  \fi\fi\fi}}
-
+%  \ifendbooknoeject \ifodd\pageno \the\oddhead \else \ifDoubleSided \the\evenhead \else \the\oddhead \fi\fi \else
+	\ifx\t@st\t@tle \the\titlehead \global\rhr@lefalse \else
+	  \ifodd\pageno \the\oddhead \else\ifDoubleSided \the\evenhead \else \the\oddhead\fi\fi
+%  \fi
+	\fi\fi}}
 % default headers are made of three components, placed left, center and right
 \newtoks\oddhead
 \newtoks\evenhead
