@@ -348,7 +348,7 @@
 	\penalty-100\vskip\baselineskip % ensure blank line between single and double column material
 	\global\output={\savepartialpage}\eject % save any partially-full page
 	% if single column material already fills 3/4 page, go to next page to start double columns
-	\ifdim\ht\partial>0.99\textheight
+	\ifdim\ht\partial>0.9\textheight
 	  \global\output={\onecol} % but output it immediately if 75% full
 	  \unvbox\partial\vfill\eject
 	\fi
@@ -397,7 +397,7 @@
   % save copy of current page so we can retry with different heights
   \global\setbox\galley=\copy255
   \global\galleypenalty=\outputpenalty % save current penalty so we can restore it at (A)
-  \global\trialheight=\textheight \global\advance\trialheight by -\ht\partial
+  \global\trialheight=\textheight \global\advance\trialheight by -2\ht\partial
   \global\output={\twocoltrial}
   \global\holdinginserts=0 % when doing trial place insertions into boxes
   \unvbox255 % force invoking \twocoltrial
