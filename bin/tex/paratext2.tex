@@ -716,7 +716,7 @@
 	\global\count\bottomins=\count255
 	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
 	\box\partial
-	\ifx\p@gefirstmark\t@tle \else\hrule\vskip2\baselineskip\fi
+	\ifendbooknoeject\ifx\p@gefirstmark\t@tle \else\hrule\vskip2\baselineskip\fi\fi
   \fi}
 
 \count\topins=1000 \dimen\topins=\maxdimen \skip\topins=0pt
