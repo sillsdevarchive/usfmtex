@@ -357,7 +357,7 @@
 	\global\hsize=\colwidth
 	\global\vsize=2\textheight % in 2 col mode you can put twice the height of text
 	\global\advance\vsize by -2\ht\partial % subtract height of 1 column material
-	\global\advance\vsize by \baselineskip % don't get caught short by 1/2 line or so
+	\global\advance\vsize by 2\baselineskip % don't get caught short by 1/2 line or so
 	% make a macro reset vsize for remaining pages which do not have 1 column material
 	\gdef\resetvsize{\global\vsize=2\textheight \global\advance\vsize by \baselineskip}
 	\global\output={\twocols}
@@ -528,7 +528,7 @@
 	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
 	\global\holdinginserts=1
   \else
-%%%    \msg{SAVEPARTIALPAGED Backingup remainder=\the\ht255, total=\the\ht\s@vedpage, vsize=\the\vsize, baselineskip=\the\baselineskip}%
+	\msg{SAVEPARTIALPAGED Backingup remainder=\the\ht255, total=\the\ht\s@vedpage, vsize=\the\vsize, baselineskip=\the\baselineskip}%
 	\global\advance\vsize by -\baselineskip
 	\global\setbox\topins=\box\voidb@x
 	\global\setbox\bottomins=\box\voidb@x
@@ -705,12 +705,11 @@
 	\global\hsize=\textwidth% \advance\hsize by -\columnshift
 	\global\vsize=\textheight
 	\global\c@rrentcols=1
-%      \MSG{\the\ht\partial is > 0.75 times \the\textheight}
+	  \MSG{\the\ht\partial is > 0.75 times \the\textheight}
+	\global\output={\onecol}
 	\ifdim\ht\partial>0.9\textheight
-	  \global\output={\twocols}
 	  \unvbox\partial\vfill\eject
 	\fi
-	\global\output={\onecol}
 	\global\holdinginserts=1
 	\count255=1000
 	\global\count\topins=\count255
