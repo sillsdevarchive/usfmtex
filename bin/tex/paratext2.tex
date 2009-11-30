@@ -391,7 +391,65 @@
   \global\setbox\partial=\vbox{\boxmaxdepth\maxdepth \unvbox\partial \pagecontents}}
 \newbox\partial
 
+
+\def\twocols{% primary output routine in 2-col mode
+%%%  \msg{TWOCOLS @ \ch@pter:\v@rse, txtht=\the\textheight, partial=\the\ht\partial}
+  % save copy of current page so we can retry with different heights
+  \global\setbox\galley=\copy255
+  \global\galleypenalty=\outputpenalty % save current penalty so we can restore it at (A)
+  \global\trialheight=\textheight \global\advance\trialheight by -\ht\partial
+  \global\output={\twocoltrial}
+  \global\holdinginserts=0 % when doing trial place insertions into boxes
+  \unvbox255 % force invoking \twocoltrial
+  \penalty\ifnum\outputpenalty=10000 0 \else \outputpenalty \fi % (A) restore output penalty
+  }
+\newbox\galley
+\newcount\galleypenalty
+\newdimen\trialheight
+
+% for measuring the space needed for each class of notes;
+% this will decrease \availht by the space needed for the given class
+\def\reduceavailht#1{%
+  \checkp@ranotes{#1}%
+  \ifp@ranotes\let\n@xt=\reduceavailht@para
+  \else\let\n@xt=\reduceavailht@sep\fi
+  \n@xt{#1}}
+
+\def\reduceavailht@para#1{
+  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
+  \ifvoid\th@cl@ss\else
+	\setbox0=\copy\th@cl@ss
+	\setbox0=\vbox{\maken@tepara{0}{#1}}
+	\advance\availht by -\ht0
+	\advance\availht by -\dp0
+	\advance\availht by -0.5\AboveNoteSpace
+	\getp@ram{baseline}{#1}\advance\availht-\p@ram
+  \fi}
+\def\reduceavailht@sep#1{
+  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
+  \ifvoid\th@cl@ss\else
+	\advance\availht by -\ht\th@cl@ss
+	\advance\availht by -\dp\th@cl@ss
+	\advance\availht by -\AboveNoteSpace
+  \fi}
+\def\cle@rn@tecl@ss#1{%
+  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
+  \global\setbox\th@cl@ss=\box\voidb@x}
+
+% increment or decrement a given \dimen by the height of a given \box, unless void
+\def\incr#1#2{\ifvoid#2\else\advance#1 by \skip#2\advance#1 by \ht#2\fi}
+\def\decr#1#2{\ifvoid#2\else\advance#1 by-\skip#2\advance#1 by-\ht#2\fi}
+
+% allocate some named registers for the \trial routine to use
+\newbox\s@vedpage % to save the page contents for re-splitting columns
+\newdimen\availht % overall available height
+\newdimen\shortavail % shortened version of \availht for re-balancing loop
+\newdimen\colhtA \newdimen\colhtB % dimen registers for calculating available ht for each col
+\newbox\colA \newbox\colB % box registers to hold contents of the columns
+
+\newif\ifrerunsavepartialpaged
 \def\savepartialpaged{%
+%%%  \msg{entering savepartialpaged}%
   \edef\t@st{\p@gefirstmark}%
   \ifx\t@st\empty\xdef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
   \global\trialheight=\textheight
@@ -468,64 +526,23 @@
 		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}}}
 	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
 	\global\holdinginserts=1
+  \else
+%%%    \msg{SAVEPARTIALPAGED Backingup remainder=\the\ht255, total=\the\ht\s@vedpage, vsize=\the\vsize, baselineskip=\the\baselineskip}%
+	\global\advance\vsize by -\baselineskip
+	\global\setbox\topins=\box\voidb@x
+	\global\setbox\bottomins=\box\voidb@x
+	\global\setbox\topleftins=\box\voidb@x
+	\global\setbox\toprightins=\box\voidb@x
+	\global\setbox\bottomleftins=\box\voidb@x
+	\global\setbox\bottomrightins=\box\voidb@x
+	\global\setbox255=\box\voidb@x
+	\global\holdinginserts=1
+	\global\let\whichtrial=\twocoltrial
+	\global\rerunsavepartialpagedtrue
+	\global\output={\backingup}\unvbox\s@vedpage
+	\penalty\ifnum\galleypenalty=10000 0 \else \galleypenalty \fi
   \fi
 }
-
-
-\def\twocols{% primary output routine in 2-col mode
-%%%  \msg{TWOCOLS @ \ch@pter:\v@rse, txtht=\the\textheight, partial=\the\ht\partial}
-  % save copy of current page so we can retry with different heights
-  \global\setbox\galley=\copy255
-  \global\galleypenalty=\outputpenalty % save current penalty so we can restore it at (A)
-  \global\trialheight=\textheight \global\advance\trialheight by -\ht\partial
-  \global\output={\twocoltrial}
-  \global\holdinginserts=0 % when doing trial place insertions into boxes
-  \unvbox255 % force invoking \twocoltrial
-  \penalty\ifnum\outputpenalty=10000 0 \else \outputpenalty \fi % (A) restore output penalty
-  }
-\newbox\galley
-\newcount\galleypenalty
-\newdimen\trialheight
-
-% for measuring the space needed for each class of notes;
-% this will decrease \availht by the space needed for the given class
-\def\reduceavailht#1{%
-  \checkp@ranotes{#1}%
-  \ifp@ranotes\let\n@xt=\reduceavailht@para
-  \else\let\n@xt=\reduceavailht@sep\fi
-  \n@xt{#1}}
-
-\def\reduceavailht@para#1{
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
-  \ifvoid\th@cl@ss\else
-	\setbox0=\copy\th@cl@ss
-	\setbox0=\vbox{\maken@tepara{0}{#1}}
-	\advance\availht by -\ht0
-	\advance\availht by -\dp0
-	\advance\availht by -0.5\AboveNoteSpace
-	\getp@ram{baseline}{#1}\advance\availht-\p@ram
-  \fi}
-\def\reduceavailht@sep#1{
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
-  \ifvoid\th@cl@ss\else
-	\advance\availht by -\ht\th@cl@ss
-	\advance\availht by -\dp\th@cl@ss
-	\advance\availht by -\AboveNoteSpace
-  \fi}
-\def\cle@rn@tecl@ss#1{%
-  \x@\let\x@\th@cl@ss\csname note-#1\endcsname
-  \global\setbox\th@cl@ss=\box\voidb@x}
-
-% increment or decrement a given \dimen by the height of a given \box, unless void
-\def\incr#1#2{\ifvoid#2\else\advance#1 by \skip#2\advance#1 by \ht#2\fi}
-\def\decr#1#2{\ifvoid#2\else\advance#1 by-\skip#2\advance#1 by-\ht#2\fi}
-
-% allocate some named registers for the \trial routine to use
-\newbox\s@vedpage % to save the page contents for re-splitting columns
-\newdimen\availht % overall available height
-\newdimen\shortavail % shortened version of \availht for re-balancing loop
-\newdimen\colhtA \newdimen\colhtB % dimen registers for calculating available ht for each col
-\newbox\colA \newbox\colB % box registers to hold contents of the columns
 
 \def\twocoltrial{% trial formatting to see if current contents will fit on the page
 %%%  \msg{TRIAL with ht=\the\trialheight, vsize=\the\vsize}
@@ -624,7 +641,8 @@
 	\xdef\p@gefirstmark{}
 	\xdef\p@gebotmark{}
 	\global\holdinginserts=1
-	\global\output={\twocols}
+	\ifrerunsavepartialpaged\global\output={\savepartialpaged}\global\rerunsavepartialpagedfalse
+	\else\global\output={\twocols}\fi
   \else % the contents of the "galley" didn't fit into the columns,
 		% so reduce \vsize and try again with an earlier break
 %%%    \msg{REDUCING VSIZE}
@@ -853,7 +871,7 @@
 \def\pagebreak{%
   \ifsk@pping \egroup \fi
   \ifhe@dings\endhe@dings\fi
-  \ifendbooknoeject\MSG{booknoeject}\else\MSG{bookeject}\vfill\eject\fi %% FIXME
+  \ifendbooknoeject\else\vfill\eject\fi %% FIXME
   \ifnum\c@rrentcols=2
 %    \iffirstcol\else\line{}\vfill\eject\fi
   \fi
