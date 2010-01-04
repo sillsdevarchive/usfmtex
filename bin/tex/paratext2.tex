@@ -528,7 +528,7 @@
 	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
 	\global\holdinginserts=1
   \else
-	\msg{SAVEPARTIALPAGED Backingup remainder=\the\ht255, total=\the\ht\s@vedpage, vsize=\the\vsize, baselineskip=\the\baselineskip}%
+%%%    \msg{SAVEPARTIALPAGED Backingup remainder=\the\ht255, total=\the\ht\s@vedpage, vsize=\the\vsize, baselineskip=\the\baselineskip}%
 	\global\advance\vsize by -\baselineskip
 	\global\setbox\topins=\box\voidb@x
 	\global\setbox\bottomins=\box\voidb@x
@@ -541,12 +541,13 @@
 	\global\let\whichtrial=\twocoltrial
 	\global\rerunsavepartialpagedtrue
 	\global\output={\backingup}\unvbox\s@vedpage
-	\penalty\ifnum\galleypenalty=10000 0 \else \galleypenalty \fi
+%    \penalty\ifnum\galleypenalty=10000 0 \else \galleypenalty \fi
+	\penalty\outputpenalty
   \fi
 }
 
 \def\twocoltrial{% trial formatting to see if current contents will fit on the page
-%%%  \msg{TRIAL with ht=\the\trialheight, vsize=\the\vsize}
+%%%\msg{TRIAL with ht=\the\trialheight, vsize=\the\vsize}
   \edef\p@gebotmark{\botmark}% remember last \mark for running header
   \edef\t@st{\p@gefirstmark}%
   \ifx\t@st\empty\edef\p@gefirstmark{\firstmark}\fi % remember first, if not already set
@@ -705,7 +706,7 @@
 	\global\hsize=\textwidth% \advance\hsize by -\columnshift
 	\global\vsize=\textheight
 	\global\c@rrentcols=1
-	  %\MSG{\the\ht\partial is > 0.75 times \the\textheight}
+%%%      \MSG{\the\ht\partial is > 0.9 times \the\textheight?}
 	\global\output={\onecol}
 	\ifdim\ht\partial>0.9\textheight
 	  \unvbox\partial\vfill\eject
