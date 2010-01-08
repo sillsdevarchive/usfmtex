@@ -204,7 +204,7 @@
 %   \box\colA is the page content
 %   \availht is ht that definitely works
 	\def\pagecontents{%
-	  %\msg{upwards mode = \the\XeTeXupwardsmode}
+%      \msg{upwards mode = \the\XeTeXupwardsmode}
 	  \ifvoid\partial\else \unvbox\partial \fi
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi
 	  \dimen0=\dp\colA
@@ -519,12 +519,12 @@
 	\ifdim\ht\colA>\ht\colB \dimen3=\ht\colA\dimen0=\dp\colA\dp\colB=\dimen0\else
 	  \dimen3=\ht\colB\dimen0=\dp\colB\dp\colA=\dimen0\fi
 	\ifdim\ht\colB<1pt\setbox\colB\vbox{\noindent\par}\fi
-	\ht\colA=\the\availht \ht\colB=\the\availht
+	\ht\colA=\the\dimen3 \ht\colB=\the\dimen3
 	\dimen4=\ht\partial
 	\global\setbox\partial=\vbox{\unvbox\partial
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi % output top spanning pictures
-	  \vbox{\hbox to \textwidth{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colA
-		\else \box\colA\makecolumngutter{\the\dimen3}{\the\availht}{\the\dimen0}\box\colB \fi}}}
+	  \vbox{\hbox to \textwidth{\hbox to \columnshift{}\ifRTL \box\colB\makecolumngutter{\the\dimen3}{\the\dimen3}{\the\dimen0}\box\colA %
+		\else \box\colA\makecolumngutter{\the\dimen3}{\the\dimen3}{\the\dimen0}\box\colB \fi}}}
 	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
 	\global\holdinginserts=1
   \else
