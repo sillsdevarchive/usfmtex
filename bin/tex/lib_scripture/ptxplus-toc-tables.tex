@@ -4,38 +4,32 @@
 % The following code controls the layout of tables that are
 % used in situations like TOC files and such. For more info
 % see "Peripherals" in the ptxplus wiki help files.
-\catcode`@=11
-\def\makedigitsother{\m@kedigitsother}
-\def\makedigitsletters{\m@kedigitsletters}
+
+
 % These are custom settings that can go in the .tex file to
 % adjust elements on the page
-\def\leaderspace{0.4em}		% The space between the leader dots
+\def\myleader{.}		% The leader character
+\def\leaderspace{0.6em}		% The space between the leader characters
 \def\tblmarginright{0in}	% The width of the table's right margin
-\def\tblheaderspace{10pt}	% The space between the header and the first row
-\def\tblrowspace{8pt}		% The space between rows of the table
-\def\colpush{60mm}		% The amount to push the second, left Justified, col.
+\def\tblheaderspace{4pt}	% The space between the header and the first row
+\def\tblrowspace{4pt}		% The space between rows of the table
+\def\tblthreewcolmngap{.75in}	% The space between col 1 & 2 on a three col table
 
-% Automated table layout macro code for format: tblthreewl
-% Macro code for three column table with flexable leaders
-% between second & third colum. Format information for
-% \tblh and \tblr is found in the .sty file.
-\newdimen\tblthreewlheaderlabel
-\def\tblthreewlheader#1#2#3{\parfillskip=\tblmarginright\setbox0\hbox{\tblh #1\tblh*\relax}\tblthreewlheaderlabel=\wd0
-  \noindent\box0\quad\tblh #2\tblh*\hfil\tblh #3\tblh*\par\vskip \tblheaderspace}
+% Macro code for leadered two colum layout:
+\newdimen\tbltwowllabel
+\def\tbltwowlheader#1#2{\parfillskip=\tblmarginright\bdit #1\bdit*\hfil
+  \setbox0=\hbox{\bdit #2\bdit*}\tbltwowllabel=\wd0\box0\par\vskip \tblheaderspace}
 
-\def\tblthreewlrow#1#2#3#4{\parskip=\tblrowspace\parfillskip=\tblmarginright\noindent\hbox to \tblthreewlheaderlabel{\tblr #1\tblr*\hss\relax}%
-  \quad\tblr #2\tblr*
-  \quad\leaders\hbox to \leaderspace {\hss\tblr #3\tblr*\hss}\hfil
-  \quad\tblr #4\tblr*\par}
+\def\tbltwowlrow#1#2{\parskip=\tblrowspace\parfillskip=\tblmarginright\noindent\bk #1\bk*%
+  \quad\leaders\hbox to \leaderspace{\hss\myleader\hss}\hfill\hbox to \tbltwowllabel{%
+  \hfil\no #2\no*}\par}%
 
-% Automated table layout macro code for format: tbltwo
-% Macro code for a simple two column table. Format
-% information for \tblh and \tblr is found in the .sty file.
-\newdimen\tbltwoheaderlabel
-\def\tbltwoheader#1#2{\parskip=\tblrowspace\parfillskip=\tblmarginright\noindent\hbox to \tbltwoheaderlabel{\tblh #1\tblh*\hss\relax}%
-  \hbox to \colpush{}\hbox{\tblh #2\tblh*}\par\baselineskip=\tblheaderspace}
+% Macro code for leadered three colum layout: (Caution, not tested yet!)
+\newdimen\tblthreewllabel
+\def\tblthreewlheader#1#2#3{\parfillskip=\tblmarginright\setbox0\hbox{\bdit #1\bdit*\relax}\tblthreewllabel=\wd0
+  \noindent\box0\hskip\tblthreewcolmngap\bdit #2\bdit*\hfil\bdit #3\bdit*\par\vskip \tblheaderspace}
 
-\def\tbltworow#1#2{\parskip=\tblrowspace\parfillskip=\tblmarginright\noindent\hbox to \tbltwoheaderlabel{\tblr #1\tblr*\hss\relax}%
-  \hbox to \colpush{}\hbox{\tblr #2\tblr*}\par\baselineskip=\tblrowspace}
-
-\catcode `@=12
+\def\tblthreewlrow#1#2#3{\parskip=\tblrowspace\parfillskip=\tblmarginright\noindent\hbox to \tblthreewllabel{\bk #1\bk*\hss\relax}%
+  \hskip\tblthreewcolmngap\k #2\k*
+  \leaders\hbox to \leaderspace{\hss\no \myleader\no*\hss}\hfil
+  \enskip\no #3\no*\par}%
