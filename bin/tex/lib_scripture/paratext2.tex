@@ -214,7 +214,7 @@
 	  \ifvoid\partial\else \unvbox\partial \fi
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi
 	  \dimen0=\dp\colA
-	  \hbox to \textwidth{\hbox to \columnshift{}
+	  \hbox to \textwidth{\hbox to \columnshift{}%
 		\box\colA\hfil}
 	  \ifvoid\bottomins\else\kern-\dimen0 \dimen0=0pt \vskip\skip\bottomins \unvbox\bottomins \fi
 	  \f@rstnotetrue
@@ -308,7 +308,7 @@
 % (based on code from the TeXbook, appendix D)
 % #1 is vbox containing notes as individual paragraphs.
 \def\maken@tepara#1#2{%
-  \hsize=\textwidth\advance\hsize by -\columnshift % width is full page size
+  \hsize=\textwidth%\advance\hsize by -\columnshift % width is full page size
   \let\par=\endgraf\ch@pterfalse
   \everypar={}% don't do body text formatting
   \unvbox#1 % open up the vbox of notes to get at the list of individual note boxes
