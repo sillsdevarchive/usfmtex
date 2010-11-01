@@ -215,7 +215,7 @@
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi
 	  \dimen0=\dp\colA
 	  \hbox to \textwidth{\hbox to \columnshift{}%
-		\box\colA\hfil}
+		\box\colA\hbox to \ExtraRMargin{}\hfil}
 	  \ifvoid\bottomins\else\kern-\dimen0 \dimen0=0pt \vskip\skip\bottomins \unvbox\bottomins \fi
 	  \f@rstnotetrue
 	  \let\\=\ins@rtn@tecl@ss \the\n@tecl@sses
