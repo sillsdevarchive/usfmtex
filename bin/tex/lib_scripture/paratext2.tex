@@ -138,6 +138,7 @@
   % currently we do not allow footnotes to break to the next page, so this may not be necessary
 %  \splittopskip\ht\f@@tstrut % top baseline for broken footnotes
 %  \splitmaxdepth\dp\f@@tstrut
+  \s@tfont{#1}%
   \futurelet\next\fo@t}% use plain.tex footnote processor
 
 % use \OmitCallerInNote{f} to omit callers from the note at foot of page
