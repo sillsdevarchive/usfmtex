@@ -540,7 +540,7 @@
 	\dimen4=\ht\partial
 	\global\setbox\partial=\vbox{\unvbox\partial
 	  \ifvoid\topins\else \unvbox\topins \vskip\skip\topins \fi % output top spanning pictures
-	  \dimen5=\textwidth\advance\dimen5 by \ExtraRMargin
+	  \dimen5=\textwidth\advance\dimen5 by \ExtraRMargin %
 	  \vbox{\hbox to \dimen5{\hbox to \columnshift{}\ifRTL \hbox to \ExtraRMargin{}\box\colB\makecolumngutter{\the\dimen3}{\the\dimen3}{\the\dimen0}\box\colA %
 		\else \box\colA\makecolumngutter{\the\dimen3}{\the\dimen3}{\the\dimen0}\box\colB\hbox to \ExtraRMargin{}\fi\hfil}}}
 	\advance\dimen3 by \dimen4 \ht\partial=\dimen3
@@ -734,7 +734,7 @@
 	\global\count\topins=\count255
 	\global\count\bottomins=\count255
 	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
-	\box\partial
+	\vbox{\hbox to -\columnshift{}\box\partial}
 	\ifendbooknoeject\ifx\p@gefirstmark\t@tle \else\hrule\vskip2\baselineskip\fi\fi
   \fi}
 
