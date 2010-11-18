@@ -735,7 +735,7 @@
 	\global\count\topins=\count255
 	\global\count\bottomins=\count255
 	\let\\=\s@tn@tec@unt \the\n@tecl@sses % reset \count for each note class
-%    \vbox{\hbox to -\columnshift{}\box\partial}
+%    \vbox{\hbox{\kern -\columnshift \box\partial}}
 	\box\partial
 	\ifendbooknoeject\ifx\p@gefirstmark\t@tle \else\hrule\vskip2\baselineskip\fi\fi
   \fi}
