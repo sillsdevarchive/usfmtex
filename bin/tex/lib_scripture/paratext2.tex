@@ -768,7 +768,7 @@
   \fi
   % set width to column width or span width
   \p@cwidth=\ifx\size@ption\size@COL \hsize
-  \else\ifx\size@ption\size@SPAN \textwidth \advance\p@cwidth by -\singlecolumnshift
+  \else\ifx\size@ption\size@SPAN \textwidth \advance\p@cwidth by -\columnshift
   \else \p@cwidth=\textwidth
 	\errmessage{Unknown picture size "\size@ption", expected "col" or "span"}\fi\fi
   \let\p@cins=\relax
