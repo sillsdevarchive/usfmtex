@@ -114,32 +114,35 @@
 %
 % Set up the font attributes for a given marker (used by all style types, not only char styles)
 %
+\def\typef@ce{\regular}
+\def\f@ntsize{12pt}
+
 \def\s@tfont#1{%
  \x@\ifx\csname font<#1>\endcsname \relax % check if font identifier for this style has been created
-  \let\typef@ce=\regular
+  \getp@ram{nofont}{#1}%
+  \ifx\p@ram\tru@\else \global\let\typef@ce=\regular\fi%
   \getp@ram{superscript}{#1}% scale down by \SuperscriptFactor if superscripted style
   \dimen0=\ifx\p@ram\tru@ \SuperscriptFactor\fi\FontSizeUnit
   \getp@ram{fontname}{#1}% see if \FontName was specified in the stylesheet
   \ifx\p@ram\relax % if not, check the \Bold and \Italic properties
 	  \getp@ram{bold}{#1}%
 	  \ifx\p@ram\tru@
-		\let\typef@ce=\bold
+		\global\let\typef@ce=\bold
 		\getp@ram{italic}{#1}%
-		\ifx\p@ram\tru@ \let\typef@ce=\bolditalic \fi
+		\ifx\p@ram\tru@ \global\let\typef@ce=\bolditalic \fi
 	  \else
 		\getp@ram{italic}{#1}%
-		\ifx\p@ram\tru@ \let\typef@ce=\italic \fi
+		\ifx\p@ram\tru@ \global\let\typef@ce=\italic \fi
 	  \fi
   \else
-   \edef\typef@ce{"\p@ram"}% use font name from the stylesheet
+   \global\edef\typef@ce{"\p@ram"}% use font name from the stylesheet
   \fi
   \getp@ram{fontsize}{#1}%
-  \ifx\p@ram\relax
-	\MSG{*** FontSize missing for marker '#1', defaulting to 12}%
-	\def\p@ram{12}\fi
+  \ifx\p@ram\relax \edef\p@ram{\f@ntsize}\fi%
+  \global\edef\f@ntsize{\p@ram}%
   % create the font identifier for this style
   \x@\global\x@\font
-	\csname font<#1>\endcsname=\typef@ce\space at \p@ram \dimen0
+  \csname font<#1>\endcsname=\typef@ce\space at \f@ntsize \dimen0
  \fi
  % switch to the appropriate font
  \csname font<#1>\endcsname
