@@ -118,33 +118,37 @@
 \def\f@ntsize{12pt}
 
 \def\s@tfont#1{%
- \x@\ifx\csname font<#1>\endcsname \relax % check if font identifier for this style has been created
-  \getp@ram{nofont}{#1}%
-  \ifx\p@ram\tru@\else \global\let\typef@ce=\regular\fi%
+ \let\ifres=\relax
+ \getp@ram{nofont}{#1}\ifx\p@ram\tru@\let\ifres=\tru@\fi
+ \x@\ifx\csname font<#1>\endcsname \relax \let\ifres=\tru@\fi % check if font identifier for this style has been created
+ \ifx\ifres\tru@
+  \ifx\p@ram\tru@\else\gdef\typef@ce{\regular}\fi%
   \getp@ram{superscript}{#1}% scale down by \SuperscriptFactor if superscripted style
   \dimen0=\ifx\p@ram\tru@ \SuperscriptFactor\fi\FontSizeUnit
   \getp@ram{fontname}{#1}% see if \FontName was specified in the stylesheet
   \ifx\p@ram\relax % if not, check the \Bold and \Italic properties
 	  \getp@ram{bold}{#1}%
 	  \ifx\p@ram\tru@
-		\global\let\typef@ce=\bold
+		\gdef\typef@ce{\bold}
 		\getp@ram{italic}{#1}%
-		\ifx\p@ram\tru@ \global\let\typef@ce=\bolditalic \fi
+		\ifx\p@ram\tru@ \gdef\typef@ce{\bolditalic} \fi
 	  \else
 		\getp@ram{italic}{#1}%
-		\ifx\p@ram\tru@ \global\let\typef@ce=\italic \fi
+		\ifx\p@ram\tru@ \gdef\typef@ce{\italic} \fi
 	  \fi
   \else
-   \global\edef\typef@ce{"\p@ram"}% use font name from the stylesheet
+   \xdef\typef@ce{"\p@ram"}% use font name from the stylesheet
   \fi
   \getp@ram{fontsize}{#1}%
   \ifx\p@ram\relax \edef\p@ram{\f@ntsize}\fi%
-  \global\edef\f@ntsize{\p@ram}%
+  \xdef\f@ntsize{\p@ram}%
   % create the font identifier for this style
   \x@\global\x@\font
   \csname font<#1>\endcsname=\typef@ce\space at \f@ntsize \dimen0
- \fi
+ \else
  % switch to the appropriate font
+  \getp@ram{fontsize}{#1}\ifx\p@ram\relax\xdef\f@ntsize{12pt}\else\xdef\f@ntsize{\p@ram}\fi%
+ \fi
  \csname font<#1>\endcsname
 }
 \def\tru@{true}
