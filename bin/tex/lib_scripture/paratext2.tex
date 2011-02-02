@@ -104,10 +104,12 @@
   % text is read later
   \ifhmode\edef\@sf{\spacefactor\the\spacefactor}\/\fi
   % if footnote is on a chapter number ...
-  \ifhe@dings #2\else
+  \testomitt@xt{#1}%
+  \ifhe@dings \ifomitt@xt\else#2\fi\else
 	\ifch@pter \everypar={}\ch@pterfalse
-	  \global\setbox\ch@pternote=\hbox{\box\ch@pternote #2}%
-	\else #2\fi % output caller
+	  \global\setbox\ch@pternote=\hbox{\box\ch@pternote%
+	  \ifomitt@xt{}\else#2\fi}%
+	\else\ifomitt@xt\else #2\fi\fi % output caller
   \fi
   % @sf preserves the space factor (e.g. extra space after a period), restore it now
   \@sf \vm@kenote{#1}{\getp@ram{notecallerstyle}{#1}\ifx\p@ram\relax #2\else #3\fi}}
@@ -145,10 +147,28 @@
 % but leave them in the body text (e.g. all the callers are *'s)
 \def\OmitCallerInNote#1{%
   \expandafter\let\csname omit-in-note #1\endcsname=1}
+\def\IncludeCallerInNote#1{%
+  \expandafter\let\csname omit-in-note #1\endcsname=\relax}
 %
 \def\testomitc@ller#1{\expandafter\ifx\csname omit-in-note #1\endcsname\relax
   \omitc@llerfalse \else \omitc@llertrue \fi}
 \newif\ifomitc@ller
+
+% use \OmitCallerInText{f} to omit callers from the main text
+% but leave them in the note.
+\def\OmitCallerInText#1{%
+  \expandafter\let\csname omit-in-text #1\endcsname=1}
+\def\IncludeCallerInText#1{%
+  \expandafter\let\csname omit-in-text #1\endcsname=\relax}
+%
+\def\testomitt@xt#1{\expandafter\ifx\csname omit-in-text #1\endcsname\relax
+  \omitt@xtfalse \else \omitt@xttrue \fi}
+\newif\ifomitt@xt
+
+%%% This is a hack.  It will break things if the previous footnote is
+%%% not on the same page!  This is dangerous and needs fixing.
+\def\RewindCaller#1{\count255=0\csname autonum #1\endcsname % decrement note counter for class #1
+ \advance\count255 by -1 \x@\xdef\csname autonum #1\endcsname{\number\count255}}
 
 % create a "strut" (see TeXbook) of suitable size for the note style
 \def\footstrut{\s@tfont{\newn@testyle}%
